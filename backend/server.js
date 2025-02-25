@@ -7,6 +7,7 @@ const errorHandler = require("./middleware/errorHandler");
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const bookRoutes = require("./routes/bookRoutes");
+const borrowRoutes = require("./routes/borrowRoutes");
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ connectDB();
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
+app.use("/api/borrows", borrowRoutes);
 
 // Error handler
 app.use(errorHandler);
