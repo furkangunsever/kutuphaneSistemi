@@ -20,20 +20,21 @@ import {
   People as PeopleIcon,
   ExitToApp as LogoutIcon,
 } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
 
 const drawerWidth = 240;
 
 const Layout = () => {
-  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    logout();
     navigate('/login');
   };
 
@@ -70,10 +71,7 @@ const Layout = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-      >
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <IconButton
             color="inherit"

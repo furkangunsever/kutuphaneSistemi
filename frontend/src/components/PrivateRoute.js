@@ -1,11 +1,14 @@
 import { Navigate, Outlet } from 'react-router-dom';
-//localstorage'e token ve user bilgilerini kaydediyoruz
+import { useAuth } from '../context/AuthContext';
 
 const PrivateRoute = () => {
-  const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { isAuthenticated } = useAuth();
 
-  if (!token || !user || user.role !== 'admin') {
+  if (isAuthenticated === null) {
+    return <div>Yükleniyor...</div>;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -8,15 +8,22 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -27,19 +34,15 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
-      if (response.data.user.role === 'admin') {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/dashboard');
-      } else {
-        setError('Sadece admin kullanıcıları giriş yapabilir');
-      }
-    } catch (error) {
-      setError(error.response?.data?.message || 'Giriş başarısız');
+    const result = await login(formData);
+    if (!result.success) {
+      setError(result.message);
     }
   };
+
+  if (isAuthenticated === null) {
+    return <div>Yükleniyor...</div>;
+  }
 
   return (
     <Container component="main" maxWidth="xs">

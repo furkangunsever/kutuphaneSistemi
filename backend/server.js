@@ -8,6 +8,9 @@ const errorHandler = require("./middleware/errorHandler");
 const authRoutes = require("./routes/authRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const borrowRoutes = require("./routes/borrowRoutes");
+const librarianRoutes = require("./routes/librarianRoutes");
+const userRoutes = require("./routes/userRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 dotenv.config();
 
@@ -24,6 +27,9 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/books", bookRoutes);
 app.use("/api/borrows", borrowRoutes);
+app.use("/api/librarian", librarianRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Error handler
 app.use(errorHandler);

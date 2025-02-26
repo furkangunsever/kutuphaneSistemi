@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
+import { AuthProvider } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Books from "./pages/Books";
@@ -22,19 +23,27 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<PrivateRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/books" element={<Books />} />
-              <Route path="/users" element={<Users />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Protected routes */}
+            <Route element={<PrivateRoute />}>
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/books" element={<Books />} />
+                <Route path="/users" element={<Users />} />
+              </Route>
             </Route>
-          </Route>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </BrowserRouter>
+
+            {/* Redirect routes */}
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

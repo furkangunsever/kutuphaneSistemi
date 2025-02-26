@@ -1,25 +1,37 @@
-import React from 'react';
-import { Grid, Paper, Typography, Box } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import { Grid, Paper, Typography, Box, CircularProgress } from "@mui/material";
 import {
   Book as BookIcon,
   Person as PersonIcon,
-  SwapHoriz as SwapIcon
-} from '@mui/icons-material';
+  SwapHoriz as SwapIcon,
+  Inventory as StockIcon,
+} from "@mui/icons-material";
+import axios from "axios";
 
-const StatCard = ({ title, value, icon }) => (
+const StatCard = ({ title, value, icon, isLoading }) => (
   <Paper
     sx={{
       p: 3,
-      display: 'flex',
-      flexDirection: 'column',
+      display: "flex",
+      flexDirection: "column",
       height: 140,
-      bgcolor: 'primary.light',
-      color: 'white'
+      bgcolor: "primary.light",
+      color: "white",
     }}
   >
-    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
       {icon}
-      <Typography variant="h4">{value}</Typography>
+      {isLoading ? (
+        <CircularProgress size={24} color="inherit" />
+      ) : (
+        <Typography variant="h4">{value}</Typography>
+      )}
     </Box>
     <Typography variant="h6" sx={{ mt: 2 }}>
       {title}
@@ -28,36 +40,85 @@ const StatCard = ({ title, value, icon }) => (
 );
 
 const Dashboard = () => {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://localhost:5000/api/dashboard/stats",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setStats(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("İstatistikler yüklenirken hata:", error);
+        setError("İstatistikler yüklenirken bir hata oluştu");
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  if (error) {
+    return (
+      <Typography
+        color="error"
+        variant="h6"
+        sx={{ textAlign: "center", mt: 4 }}
+      >
+        {error}
+      </Typography>
+    );
+  }
+
   return (
-    <>
-      <Typography variant="h4" sx={{ mb: 5 }}>
+    <Box sx={{ flexGrow: 1 }}>
+      <Typography variant="h4" sx={{ mb: 4 }}>
         Dashboard
       </Typography>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3}>
           <StatCard
             title="Toplam Kitap"
-            value="150"
+            value={stats?.totalBooks || 0}
             icon={<BookIcon sx={{ fontSize: 40 }} />}
+            isLoading={loading}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3}>
+          <StatCard
+            title="Toplam Stok"
+            value={stats?.totalStock || 0}
+            icon={<StockIcon sx={{ fontSize: 40 }} />}
+            isLoading={loading}
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
           <StatCard
             title="Toplam Kullanıcı"
-            value="45"
+            value={stats?.totalUsers || 0}
             icon={<PersonIcon sx={{ fontSize: 40 }} />}
+            isLoading={loading}
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={3}>
           <StatCard
-            title="Ödünç İşlemleri"
-            value="23"
+            title="Aktif Ödünç"
+            value={stats?.activeBorrows || 0}
             icon={<SwapIcon sx={{ fontSize: 40 }} />}
+            isLoading={loading}
           />
         </Grid>
       </Grid>
-    </>
+    </Box>
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
