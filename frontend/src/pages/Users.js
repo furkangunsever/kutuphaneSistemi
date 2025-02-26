@@ -164,10 +164,13 @@ const Users = () => {
     fetchUsers();
   }, []);
 
+  const roleOptions = [
+    { value: "user", label: "Kullanıcı" },
+    { value: "librarian", label: "Kütüphane Yetkilisi" },
+  ];
+
   const getRoleColor = (role) => {
     switch (role) {
-      case "superadmin":
-        return "error";
       case "librarian":
         return "primary";
       default:
@@ -279,9 +282,11 @@ const Users = () => {
                 required
                 fullWidth
               >
-                <MenuItem value="user">Kullanıcı</MenuItem>
-                <MenuItem value="librarian">Kütüphane Yetkilisi</MenuItem>
-                <MenuItem value="superadmin">Süper Admin</MenuItem>
+                {roleOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
               </TextField>
               <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
                 <Button variant="outlined" onClick={handleClose}>
@@ -321,9 +326,11 @@ const Users = () => {
                 required
                 fullWidth
               >
-                <MenuItem value="user">Kullanıcı</MenuItem>
-                <MenuItem value="librarian">Kütüphane Yetkilisi</MenuItem>
-                <MenuItem value="superadmin">Süper Admin</MenuItem>
+                {roleOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
               </TextField>
               <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
                 <Button variant="outlined" onClick={handleEditClose}>
