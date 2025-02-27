@@ -30,6 +30,8 @@ const modalStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
+  overflow: "auto",
+  maxHeight: "90vh",
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
@@ -213,7 +215,7 @@ const Books = () => {
               <TableRow key={book._id}>
                 <TableCell>{book.title}</TableCell>
                 <TableCell>{book.author}</TableCell>
-                <TableCell>{book.isbn}</TableCell>
+                <TableCell>{book.ISBN}</TableCell>
                 <TableCell>{book.publishYear}</TableCell>
                 <TableCell>{book.quantity}</TableCell>
                 <TableCell>
@@ -358,7 +360,7 @@ const Books = () => {
               <TextField
                 name="ISBN"
                 label="ISBN"
-                value={selectedBook?.isbn || ""}
+                value={selectedBook?.ISBN || ""}
                 onChange={handleChange}
                 required
                 fullWidth
