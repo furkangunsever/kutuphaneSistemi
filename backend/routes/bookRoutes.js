@@ -1,18 +1,22 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
+const librarianAuth = require("../middleware/librarian");
 const {
   getAllBooks,
   getBook,
   createBook,
   updateBook,
-  deleteBook
-} = require('../controllers/bookController');
+  deleteBook,
+} = require("../controllers/bookController");
 
-router.get('/', getAllBooks);
-router.get('/:id', getBook);
-router.post('/', auth, createBook);
-router.put('/:id', auth, updateBook);
-router.delete('/:id', auth, deleteBook);
+// Herkese açık rotalar
+router.get("/", getAllBooks);
+router.get("/:id", getBook);
 
-module.exports = router; 
+// Sadece kütüphaneci ve süper admin yetkisi gerektiren rotalar
+router.post("/", auth, librarianAuth, createBook);
+router.put("/:id", auth, librarianAuth, updateBook);
+router.delete("/:id", auth, librarianAuth, deleteBook);
+
+module.exports = router;
