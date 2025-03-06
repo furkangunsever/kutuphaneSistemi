@@ -1,14 +1,39 @@
 const Book = require("../models/Book");
 const Borrow = require("../models/Borrow");
 const User = require("../models/User");
+const sharp = require("sharp");
 
 // Kitap işlemleri
 exports.addBook = async (req, res) => {
   try {
-    const book = await Book.create(req.body);
-    res.status(201).json(book);
+    const { title, author, isbn, category, publishYear, quantity, location } =
+      req.body;
+
+    // Dosya yüklendi mi kontrolü
+    const imageUrl = req.file ? `/uploads/books/${req.file.filename}` : null;
+
+    const newBook = new Book({
+      title,
+      author,
+      isbn,
+      category,
+      publishYear,
+      quantity,
+      location,
+      imageUrl, // Artık dosya yolu olarak kaydediyoruz
+    });
+
+    await newBook.save();
+
+    res.status(201).json({
+      message: "Kitap başarıyla eklendi",
+      book: newBook,
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({
+      message: "Kitap eklenirken bir hata oluştu",
+      error: error.message,
+    });
   }
 };
 
