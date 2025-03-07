@@ -1,8 +1,13 @@
+const dotenv = require("dotenv");
+// En başta .env dosyasını yükle
+dotenv.config();
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
+const fs = require("fs");
+const path = require("path");
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
@@ -12,13 +17,25 @@ const librarianRoutes = require("./routes/librarianRoutes");
 const userRoutes = require("./routes/userRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
-dotenv.config();
-
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Statik dosyalar için middleware ekle
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Uploads klasörünü oluştur
+const uploadsDir = path.join(__dirname, "uploads");
+const booksUploadsDir = path.join(__dirname, "uploads/books");
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+if (!fs.existsSync(booksUploadsDir)) {
+  fs.mkdirSync(booksUploadsDir);
+}
 
 // Database bağlantısı
 connectDB();

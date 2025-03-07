@@ -6,4 +6,4 @@ const { getStats } = require("../controllers/dashboardController");
 
 router.get("/stats", auth, admin, getStats);
 
-module.exports = router;
+module.exports = router; 

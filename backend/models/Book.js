@@ -10,7 +10,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    ISBN: {
+    isbn: {
       type: String,
       required: true,
       unique: true,
@@ -34,7 +34,7 @@ const bookSchema = new mongoose.Schema(
       default: Date.now,
     },
     imageUrl: {
-      type: String, // base64 formatında görsel verisi
+      type: String,
       required: false,
     },
   },
