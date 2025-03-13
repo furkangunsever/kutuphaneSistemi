@@ -1,5 +1,5 @@
-const Borrow = require('../models/Borrow');
-const Book = require('../models/Book');
+const Borrow = require("../models/Borrow");
+const Book = require("../models/Book");
 
 // Kitap ödünç alma
 exports.borrowBook = async (req, res) => {
@@ -10,18 +10,18 @@ exports.borrowBook = async (req, res) => {
     // Kitabın müsait olup olmadığını kontrol et
     const book = await Book.findById(bookId);
     if (!book || book.quantity < 1) {
-      return res.status(400).json({ message: 'Kitap stokta yok' });
+      return res.status(400).json({ message: "Kitap stokta yok" });
     }
 
     // Kullanıcının aktif ödünç alma limiti kontrolü
     const activeLoans = await Borrow.countDocuments({
       user: userId,
-      status: 'active'
+      status: "active",
     });
 
     if (activeLoans >= 3) {
-      return res.status(400).json({ 
-        message: 'Maksimum ödünç alma limitine ulaştınız' 
+      return res.status(400).json({
+        message: "Maksimum ödünç alma limitine ulaştınız",
       });
     }
 
@@ -29,14 +29,14 @@ exports.borrowBook = async (req, res) => {
     const borrow = await Borrow.create({
       user: userId,
       book: bookId,
-      dueDate: new Date(dueDate)
+      dueDate: new Date(dueDate),
     });
 
     // Kitap stokunu güncelle
     book.quantity -= 1;
     await book.save();
 
-    await borrow.populate('book', 'title author');
+    await borrow.populate("book", "title author");
     res.status(201).json(borrow);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -47,18 +47,18 @@ exports.borrowBook = async (req, res) => {
 exports.returnBook = async (req, res) => {
   try {
     const { borrowId } = req.params;
-    
+
     const borrow = await Borrow.findById(borrowId);
     if (!borrow) {
-      return res.status(404).json({ message: 'Kayıt bulunamadı' });
+      return res.status(404).json({ message: "Kayıt bulunamadı" });
     }
 
-    if (borrow.status === 'returned') {
-      return res.status(400).json({ message: 'Kitap zaten iade edilmiş' });
+    if (borrow.status === "returned") {
+      return res.status(400).json({ message: "Kitap zaten iade edilmiş" });
     }
 
     // İade işlemini gerçekleştir
-    borrow.status = 'returned';
+    borrow.status = "returned";
     borrow.returnDate = new Date();
     await borrow.save();
 
@@ -77,12 +77,33 @@ exports.returnBook = async (req, res) => {
 exports.getUserBorrows = async (req, res) => {
   try {
     const borrows = await Borrow.find({ user: req.user.id })
-      .populate('book', 'title author')
-      .sort('-borrowDate');
-    
-    res.json(borrows);
+      .populate("book", "title author imageUrl isbn")
+      .sort("-borrowDate")
+      .lean();
+
+    const formattedBorrows = borrows.map((borrow) => ({
+      id: borrow._id,
+      bookTitle: borrow.book.title,
+      bookAuthor: borrow.book.author,
+      bookImage: borrow.book.imageUrl,
+      isbn: borrow.book.isbn,
+      borrowDate: borrow.borrowDate,
+      dueDate: borrow.dueDate,
+      returnDate: borrow.returnDate,
+      status: borrow.status,
+      notes: borrow.notes,
+    }));
+
+    res.json({
+      count: formattedBorrows.length,
+      borrows: formattedBorrows,
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Ödünç kayıtları getirme hatası:", error);
+    res.status(500).json({
+      message: "Ödünç kayıtları alınırken bir hata oluştu",
+      error: error.message,
+    });
   }
 };
 
@@ -90,12 +111,12 @@ exports.getUserBorrows = async (req, res) => {
 exports.getAllBorrows = async (req, res) => {
   try {
     const borrows = await Borrow.find()
-      .populate('book', 'title author')
-      .populate('user', 'name email')
-      .sort('-borrowDate');
-    
+      .populate("book", "title author")
+      .populate("user", "name email")
+      .sort("-borrowDate");
+
     res.json(borrows);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}; 
+};
