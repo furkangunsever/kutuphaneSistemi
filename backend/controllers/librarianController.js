@@ -259,3 +259,30 @@ exports.getAllBorrows = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+// Kullanıcı arama fonksiyonu
+exports.findUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email parametresi gerekli" });
+    }
+
+    const user = await User.findOne({ email })
+      .select('_id name email')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("Kullanıcı arama hatası:", error);
+    res.status(500).json({
+      message: "Kullanıcı aranırken bir hata oluştu",
+      error: error.message
+    });
+  }
+};

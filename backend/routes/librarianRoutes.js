@@ -8,6 +8,7 @@ const {
   receiveBook,
   extendBorrowPeriod,
   getAllBorrows,
+  findUserByEmail,
 } = require("../controllers/librarianController");
 const upload = require("../config/multerConfig");
 
@@ -22,5 +23,8 @@ router.post("/lend", auth, librarianAuth, lendBook);
 router.put("/receive/:borrowId", auth, librarianAuth, receiveBook);
 router.put("/extend/:borrowId", auth, librarianAuth, extendBorrowPeriod);
 router.get("/borrows", auth, librarianAuth, getAllBorrows);
+
+// Kullanıcı arama endpoint'i
+router.get("/users/find", auth, librarianAuth, findUserByEmail);
 
 module.exports = router;
