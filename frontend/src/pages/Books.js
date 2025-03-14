@@ -217,6 +217,7 @@ const Books = () => {
                 <TableCell>{book.author}</TableCell>
                 <TableCell>{book.ISBN}</TableCell>
                 <TableCell>{book.publishYear}</TableCell>
+                <TableCell>{book.category}</TableCell>
                 <TableCell>{book.quantity}</TableCell>
                 <TableCell>
                   <Chip
