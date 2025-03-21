@@ -103,7 +103,7 @@ const Dashboard = () => {
         <Grid item xs={12} md={3}>
           <StatCard
             title="Toplam Kullanıcı"
-            value={stats?.totalUsers || 0}
+            value={(stats?.totalUsers - 1) || 0}
             icon={<PersonIcon sx={{ fontSize: 40 }} />}
             isLoading={loading}
           />

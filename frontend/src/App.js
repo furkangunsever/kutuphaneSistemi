@@ -8,6 +8,7 @@ import Books from "./pages/Books";
 import Users from "./pages/Users";
 import Layout from "./components/Layout";
 import PrivateRoute from "./components/PrivateRoute";
+import ActiveBorrows from "./pages/ActiveBorrows";
 
 const theme = createTheme({
   palette: {
@@ -28,13 +29,14 @@ function App() {
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
-            
+
             {/* Protected routes */}
             <Route element={<PrivateRoute />}>
               <Route element={<Layout />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/books" element={<Books />} />
                 <Route path="/users" element={<Users />} />
+                <Route path="/active-borrows" element={<ActiveBorrows />} />
               </Route>
             </Route>
 

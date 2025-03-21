@@ -1,5 +1,5 @@
-import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import React from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -12,15 +12,16 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   Book as BookIcon,
   People as PeopleIcon,
   ExitToApp as LogoutIcon,
-} from '@mui/icons-material';
-import { useAuth } from '../context/AuthContext';
+  SwapHoriz as BorrowIcon,
+} from "@mui/icons-material";
+import { useAuth } from "../context/AuthContext";
 
 const drawerWidth = 240;
 
@@ -35,13 +36,14 @@ const Layout = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Kitaplar', icon: <BookIcon />, path: '/books' },
-    { text: 'Kullanıcılar', icon: <PeopleIcon />, path: '/users' },
+    { text: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
+    { text: "Kitaplar", icon: <BookIcon />, path: "/books" },
+    { text: "Kullanıcılar", icon: <PeopleIcon />, path: "/users" },
+    { text: "Aktif Ödünçler", icon: <BorrowIcon />, path: "/active-borrows" },
   ];
 
   const drawer = (
@@ -49,11 +51,7 @@ const Layout = () => {
       <Toolbar />
       <List>
         {menuItems.map((item) => (
-          <ListItem
-            button
-            key={item.text}
-            onClick={() => navigate(item.path)}
-          >
+          <ListItem button key={item.text} onClick={() => navigate(item.path)}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
@@ -69,16 +67,19 @@ const Layout = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar
+        position="fixed"
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { sm: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -99,9 +100,9 @@ const Layout = () => {
             keepMounted: true,
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
               width: drawerWidth,
             },
           }}
@@ -111,9 +112,9 @@ const Layout = () => {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
               width: drawerWidth,
             },
           }}
@@ -137,4 +138,4 @@ const Layout = () => {
   );
 };
 
-export default Layout; 
+export default Layout;

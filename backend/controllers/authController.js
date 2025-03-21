@@ -18,12 +18,16 @@ exports.register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: role || "user"
+      role: role || "user",
     });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "30d",
+      }
+    );
 
     res.status(201).json({
       user: {
@@ -57,9 +61,13 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Geçersiz email veya şifre" });
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "30d",
+      }
+    );
 
     res.json({
       user: {
@@ -78,16 +86,56 @@ exports.login = async (req, res) => {
 
 exports.verifyToken = async (req, res) => {
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
+    const token = req.header("Authorization").replace("Bearer ", "");
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    const user = await User.findById(decoded.id).select('-password');
+
+    const user = await User.findById(decoded.id).select("-password");
     if (!user) {
       throw new Error();
     }
 
     res.json({ user });
   } catch (error) {
-    res.status(401).json({ message: 'Token geçersiz' });
+    res.status(401).json({ message: "Token geçersiz" });
+  }
+};
+
+exports.updateFCMToken = async (req, res) => {
+  try {
+    const { fcmToken } = req.body;
+    const userId = req.user.id;
+
+    if (!fcmToken) {
+      return res.status(400).json({ message: "FCM token gerekli" });
+    }
+
+    // Token'ı kullanıcının token listesine ekle (eğer yoksa)
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { fcmTokens: fcmToken },
+    });
+
+    res.json({ message: "FCM token başarıyla güncellendi" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.removeFCMToken = async (req, res) => {
+  try {
+    const { fcmToken } = req.body;
+    const userId = req.user.id;
+
+    if (!fcmToken) {
+      return res.status(400).json({ message: "FCM token gerekli" });
+    }
+
+    // Token'ı kullanıcının listesinden kaldır
+    await User.findByIdAndUpdate(userId, {
+      $pull: { fcmTokens: fcmToken },
+    });
+
+    res.json({ message: "FCM token başarıyla kaldırıldı" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

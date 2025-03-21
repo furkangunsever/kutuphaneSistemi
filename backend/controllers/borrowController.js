@@ -120,3 +120,37 @@ exports.getAllBorrows = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+// Aktif ödünç işlemlerini getir
+exports.getActiveBorrows = async (req, res) => {
+  try {
+    const activeBorrows = await Borrow.find({ status: "active" })
+      .populate("book", "title author isbn imageUrl")
+      .populate("user", "name email")
+      .sort("-borrowDate")
+      .lean();
+
+    const formattedBorrows = activeBorrows.map((borrow) => ({
+      id: borrow._id,
+      bookTitle: borrow.book.title,
+      bookAuthor: borrow.book.author,
+      bookIsbn: borrow.book.isbn,
+      bookImage: borrow.book.imageUrl,
+      userName: borrow.user.name,
+      userEmail: borrow.user.email,
+      borrowDate: borrow.borrowDate,
+      dueDate: borrow.dueDate,
+      remainingDays: Math.ceil(
+        (new Date(borrow.dueDate) - new Date()) / (1000 * 60 * 60 * 24)
+      ),
+    }));
+
+    res.json(formattedBorrows);
+  } catch (error) {
+    console.error("Aktif ödünç kayıtları getirme hatası:", error);
+    res.status(500).json({
+      message: "Aktif ödünç kayıtları alınırken bir hata oluştu",
+      error: error.message,
+    });
+  }
+};

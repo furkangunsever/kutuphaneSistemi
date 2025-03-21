@@ -48,5 +48,5 @@ Thumbs.db
 # Cloudinary credentials
 backend/config/cloudinaryConfig.js
 
-# Uploads folder
-backend/uploads/ 
+# Firebase service account
+backend/firebase-service-account.json

@@ -8,6 +8,8 @@ const connectDB = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
 const fs = require("fs");
 const path = require("path");
+const cron = require("node-cron");
+const { checkDueDates } = require("./services/notificationService");
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
@@ -50,6 +52,12 @@ app.use("/api/dashboard", dashboardRoutes);
 
 // Error handler
 app.use(errorHandler);
+
+// Her gün saat 09:00'da çalışacak cron job
+cron.schedule("0 9 * * *", () => {
+  console.log("İade süresi kontrolü başlatılıyor...");
+  checkDueDates();
+});
 
 const PORT = process.env.PORT || 5000;
 
