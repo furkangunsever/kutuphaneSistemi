@@ -41,6 +41,20 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    notes: [
+      {
+        type: {
+          type: String,
+          enum: ["damage", "maintenance", "other"],
+        },
+        date: Date,
+        description: String,
+        reportedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      },
+    ],
   },
   {
     timestamps: true,

@@ -1,19 +1,26 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
-const admin = require("../middleware/admin");
+const librarianAuth = require("../middleware/librarian");
 const {
   borrowBook,
   returnBook,
   getUserBorrows,
   getAllBorrows,
   getActiveBorrows,
+  getOverdueBooks,
+  getBookBorrowHistory,
 } = require("../controllers/borrowController");
 
+// Normal kullanıcı işlemleri
 router.post("/borrow", auth, borrowBook);
-router.put("/return/:borrowId", auth, returnBook);
 router.get("/my-borrows", auth, getUserBorrows);
-router.get("/all", auth, admin, getAllBorrows);
-router.get("/active", auth, admin, getActiveBorrows);
+
+// Kütüphaneci ve admin işlemleri (librarianAuth hem librarian hem de superadmin'e izin verir)
+router.put("/return/:borrowId", auth, librarianAuth, returnBook);
+router.get("/all", auth, librarianAuth, getAllBorrows);
+router.get("/active", auth, librarianAuth, getActiveBorrows);
+router.get("/overdue", auth, librarianAuth, getOverdueBooks);
+router.get("/book/:bookId", auth, librarianAuth, getBookBorrowHistory);
 
 module.exports = router;
