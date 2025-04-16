@@ -38,6 +38,10 @@ const borrowSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    overdueSent: {
+      type: Boolean,
+      default: false,
+    },
     processedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

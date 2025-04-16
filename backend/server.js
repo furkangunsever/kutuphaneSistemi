@@ -9,7 +9,7 @@ const errorHandler = require("./middleware/errorHandler");
 const fs = require("fs");
 const path = require("path");
 const cron = require("node-cron");
-const { checkDueDates } = require("./services/notificationService");
+const { checkReturnReminders, checkOverdueBooks } = require("./services/notificationService");
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
@@ -53,10 +53,16 @@ app.use("/api/dashboard", dashboardRoutes);
 // Error handler
 app.use(errorHandler);
 
-// Her gün saat 09:00'da çalışacak cron job
-cron.schedule("0 9 * * *", () => {
-  console.log("İade süresi kontrolü başlatılıyor...");
-  checkDueDates();
+// Her gün sabah 9'da iade hatırlatmaları kontrolü
+cron.schedule("0 9 * * *", async () => {
+  console.log("İade hatırlatmaları kontrolü başlatıldı...");
+  await checkReturnReminders();
+});
+
+// Her gün öğlen 12'de gecikmiş kitaplar kontrolü
+cron.schedule("0 12 * * *", async () => {
+  console.log("Gecikmiş kitaplar kontrolü başlatıldı...");
+  await checkOverdueBooks();
 });
 
 const PORT = process.env.PORT || 5000;
